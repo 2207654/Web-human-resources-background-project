@@ -2,16 +2,69 @@
   <div class="login-container">
     <div class="logo" />
     <div class="form">
-      <h1>登录</h1>
-      <el-card shadow="never" class="login-card">
-        <!--登录表单-->
-      </el-card>
-    </div> 
+  <h1>登录</h1>
+  <el-card shadow="never" class="login-card">
+    <!--登录表单-->
+    <!-- el-form > el-form-item > el-input -->
+    <el-form :model="list" :rules="rules">
+      <el-form-item prop="phone">
+        <el-input placeholder="请输入手机号" v-model="list.phone"/>
+      </el-form-item>
+      <el-form-item prop="password" >
+        <el-input placeholder="请输入密码" v-model="list.password"/>
+      </el-form-item>
+      <el-form-item prop="protocol">
+        <el-checkbox v-model="list.protocol"> 
+          用户平台使用协议
+        </el-checkbox>
+      </el-form-item>
+      <el-form-item>
+        <el-button style="width:350px" type="primary">登录</el-button>
+      </el-form-item>
+    </el-form>
+    </el-card>
+  </div>
   </div>
 </template>
 <script>
 export default {
-  name : "Login"
+  name : "Login",
+  data(){
+    //自定义验证手机号
+    var checkPhone=(rule, value, callback)=>{
+        const phoneReg=/^(?:(?:\+|00)86)?1\d{10}$/
+        if (!value) {
+          return callback(new Error('年龄不能为空'));
+          }else{
+          if(phoneReg.test(value)){
+            callback()
+          }else{
+            callback(new Error('手机号格式不正确'))
+          }
+        }
+      }
+      //自定义验证用户平台使用协议
+      var agreement = (rule, value, callback) => {
+        console.log(value);
+        value?callback():callback(new Error('您必须勾选用户的使用协议'))
+      }
+    return{
+      list:{
+        phone:'',
+        password:'',
+        protocol:'',
+      },
+      rules:{
+        phone:[ { required: true, message: '请输入手机号', trigger: 'blur' },
+      {validator:checkPhone,trigger:'blur'}],
+        password:[ { required: true, message: '请输入密码', trigger: 'blur' },
+        { min: 6, max: 16, message: '长度在 6 到 16位之间', trigger: 'blur' }],
+        protocol:[ { type: 'boolean',required: true, message: '您必须勾选用户的使用协议', trigger: 'change' },
+        {validator:agreement,trigger:'change'}]
+      },
+      
+  }
+}
 }
 </script>
 <style lang="scss">
